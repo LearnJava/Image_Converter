@@ -1,4 +1,4 @@
-package com.nikitabolshakov.image_converter
+package com.konstantin.image_converter
 
 import org.junit.Test
 

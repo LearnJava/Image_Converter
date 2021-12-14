@@ -7,7 +7,7 @@ android {
     compileSdk 30
 
     defaultConfig {
-        applicationId "com.nikitabolshakov.image_converter"
+        applicationId "com.konstantin.image_converter"
         minSdk 23
         targetSdk 30
         versionCode 1

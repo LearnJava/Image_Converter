@@ -1,20 +1,15 @@
-package com.nikitabolshakov.image_converter
+package com.konstantin.image_converter
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import com.nikitabolshakov.image_converter.databinding.ActivityMainBinding
+import com.konstantin.image_converter.databinding.ActivityMainBinding
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
-import io.reactivex.rxjava3.annotations.NonNull
 import io.reactivex.rxjava3.core.Flowable
-import io.reactivex.rxjava3.core.Observable
-import io.reactivex.rxjava3.core.Observer
-import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.schedulers.Schedulers
-import java.io.ByteArrayOutputStream
 import java.io.IOException
 
 class MainActivity : AppCompatActivity() {
@@ -32,6 +27,8 @@ class MainActivity : AppCompatActivity() {
             binding.bitmapImage.setImageBitmap(bitmap)
         }
 
+//        val drawableImage = (binding.bitmapImage.drawable as BitmapDrawable).bitmap
+
         binding.convertStop.setOnClickListener {
             Log.d("RxJava", "Pressed button STOP")
             disp.dispose()
@@ -40,8 +37,9 @@ class MainActivity : AppCompatActivity() {
         binding.convertButton.setOnClickListener {
             if (bitmap != null) {
                 Log.d("RxJava", "Start converter, pressed start button.")
-                disp = bitmap.compress(Bitmap.CompressFormat.PNG)
-                    .subscribeOn(Schedulers.computation())
+
+                disp = Flowable.fromCallable(ConvertToPng(bitmap, Bitmap.CompressFormat.PNG))
+                    .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(
                         {
@@ -77,14 +75,4 @@ class MainActivity : AppCompatActivity() {
             null
         }
     }
-}
-
-fun Bitmap.compress(
-    format: Bitmap.CompressFormat = Bitmap.CompressFormat.JPEG,
-    quality: Int = 100
-): @NonNull Flowable<Bitmap> {
-    val stream = ByteArrayOutputStream()
-    this.compress(format, quality, stream)
-    val byteArray = stream.toByteArray()
-    return  Flowable.just(BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size))
 }
